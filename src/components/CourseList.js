@@ -1,6 +1,24 @@
 import { terms, getCourseTerm } from '../utilities/times.js';
 import React, { useState} from "react";
 import Course from './Course.js';
+import { signInWithGoogle, signOut, useUserState } from '../utilities/firebase.js';
+
+
+
+const SignInButton = () => (
+  <button className="btn btn-secondary btn-sm"
+      onClick={() => signInWithGoogle()}>
+    Sign In
+  </button>
+);
+
+const SignOuButton = () => (
+  <button className="btn btn-secondary btn-sm"
+      onClick={() => signOut()}>
+    Sign Out
+  </button>
+);
+
 
 
 
@@ -22,7 +40,10 @@ const TermButton = ({ term, checked, setTerm }) => (
 
 
 
-const TermSelector = ({ term, setTerm }) => (
+const TermSelector = ({ term, setTerm }) => {
+  const [user] = useUserState();
+  return(
+  <div className="btn-toolbar justify-content-between">
     <div className="btn-group">
       {Object.values(terms).map(value => (
         <TermButton
@@ -33,7 +54,9 @@ const TermSelector = ({ term, setTerm }) => (
         />
       ))}
     </div>
-  );
+    { user ? <SignOuButton /> : <SignInButton /> }
+  </div>
+  )};
   
   
   const CourseList = ({ courses }) => {
