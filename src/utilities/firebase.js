@@ -1,0 +1,47 @@
+import { initializeApp } from 'firebase/app';
+import { getDatabase, onValue, ref, set } from 'firebase/database';
+import { useState, useEffect } from "react";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyC4uakU56_0Y-s7qydmE4UfNe4E1OP4SLQ",
+    authDomain: "react-tutorial-4292c.firebaseapp.com",
+    databaseURL: "https://react-tutorial-4292c-default-rtdb.firebaseio.com",
+    projectId: "react-tutorial-4292c",
+    storageBucket: "react-tutorial-4292c.appspot.com",
+    messagingSenderId: "130137428048",
+    appId: "1:130137428048:web:2220e8b79a8cd0807fc155",
+    measurementId: "G-S03NT2D6VW"
+  };
+
+
+const firebase = initializeApp(firebaseConfig);
+const database = getDatabase(firebase);
+
+
+
+export const useData = (path, transform) => {
+    const [data, setData] = useState();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState();
+  
+    useEffect(() => {
+      const dbRef = ref(database, path);
+      const devMode = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+      if (devMode) { console.log(`loading ${path}`); }
+      return onValue(dbRef, (snapshot) => {
+        const val = snapshot.val();
+        if (devMode) { console.log(val); }
+        setData(transform ? transform(val) : val);
+        setLoading(false);
+        setError(null);
+      }, (error) => {
+        setData(null);
+        setLoading(false);
+        setError(error);
+      });
+    }, [path, transform]);
+  
+    return [data, loading, error];
+  };
+
+  export default useData;
